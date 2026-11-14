@@ -70,3 +70,49 @@ export async function updateOrderStatus(formData: FormData) {
   if (error) fail(error.message);
   finish("Status pesanan berhasil diperbarui.");
 }
+
+export async function createAdminOrder(formData: FormData) {
+  const client = await createSupabaseServerClient();
+  const { data: { user } } = await client.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: profile } = await client.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profile?.role !== "admin" && profile?.role !== "owner") fail("Akses admin diperlukan.");
+  const serviceId = String(formData.get("service_id") || "");
+  const target = String(formData.get("target") || "").trim();
+  const quantity = Number(formData.get("quantity"));
+  if (!serviceId || !target || target.length > 500 || !Number.isInteger(quantity) || quantity < 1 || quantity > 1000000) fail("Data pesanan tidak valid.");
+  const { data: service, error: serviceError } = await client.from("services").select("id,price,active").eq("id", serviceId).maybeSingle();
+  if (serviceError || !service || !service.active) fail("Layanan tidak tersedia.");
+  const total = Number(service.price) * quantity;
+  if (!Number.isFinite(total) || total < 0) fail("Total pesanan tidak valid.");
+  const { error } = await client.from("orders").insert({ user_id: user.id, service_id: service.id, customer_email: user.email || "", target, quantity, total, status: "pending" });
+  if (error) fail("Pesanan gagal dibuat: " + error.message);
+  revalidatePath("/dashboard");
+  redirect("/dashboard?tab=history&notice=" + encodeURIComponent("Pesanan berhasil dibuat."));
+}
+
+export async function updateAdminAccount(formData: FormData) {
+  const client = await createSupabaseServerClient();
+  const { data: { user } } = await client.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: profile } = await client.from("profiles").select("role").eq("id", user.id).maybeSingle();
+  if (profile?.role !== "admin" && profile?.role !== "owner") fail("Akses admin diperlukan.");
+  const username = String(formData.get("username") || "").trim();
+  const password = String(formData.get("password") || "");
+  if (!username || username.length > 40) fail("Nama tampilan wajib diisi maksimal 40 karakter.");
+  const { error: profileError } = await client.from("profiles").update({ username, updated_at: new Date().toISOString() }).eq("id", user.id);
+  if (profileError) fail("Nama akun gagal diperbarui: " + profileError.message);
+  if (password) {
+    if (password.length < 8) fail("Kata sandi minimal 8 karakter.");
+    const { error: passwordError } = await client.auth.updateUser({ password });
+    if (passwordError) fail("Kata sandi gagal diperbarui: " + passwordError.message);
+  }
+  revalidatePath("/dashboard");
+  redirect("/dashboard?tab=me&notice=" + encodeURIComponent("Pengaturan akun berhasil disimpan."));
+}
+
+export async function signOutAdmin() {
+  const client = await createSupabaseServerClient();
+  await client.auth.signOut();
+  redirect("/login");
+}

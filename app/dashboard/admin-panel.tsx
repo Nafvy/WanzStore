@@ -26,9 +26,7 @@ export function AdminDashboard({ tab, email, username, services, orders, notice,
   return <main className="dashboard-shell min-h-screen pb-28">
     <header className="site-header sticky top-0"><div className="container flex min-h-[68px] items-center justify-between gap-3"><Link href="/dashboard?tab=home" className="brand" aria-label="Beranda dashboard"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link><div className="flex items-center gap-2"><Link href="/dashboard/sprintpedia" className="button button-secondary"><Zap size={16}/> SprintPedia</Link><form action={signOutAdmin}><button className="button button-secondary" type="submit"><LogOut size={16}/><span className="hidden sm:inline">Keluar</span></button></form></div></div></header>
     <div className="container pt-7">
-      <p className="text-xs font-bold tracking-[.16em] text-violet-300">WANZSTORE / ADMIN CONSOLE</p>
-      <h1 className="mt-2 text-3xl font-bold">Dashboard Admin</h1>
-      <p className="mt-2 text-sm text-slate-400">Kelola pesanan, buat pesanan, dan atur akun admin.</p>
+      {activeTab === "home" && <div className="mb-7"><h1 className="text-3xl font-bold">Beranda</h1><p className="mt-2 text-sm text-slate-400">Ringkasan aktivitas toko dan pesanan terbaru.</p></div>}
       {notice && <div role="status" className="mt-5 rounded-xl border border-emerald-700/60 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-200">{notice}</div>}
       {error && <div role="alert" className="mt-5 rounded-xl border border-rose-700/60 bg-rose-950/40 px-4 py-3 text-sm text-rose-200">{error}</div>}
 

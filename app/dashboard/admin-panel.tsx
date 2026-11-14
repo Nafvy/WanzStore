@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, History, ShoppingCart, UserRound, Zap, LogOut, Package, ClipboardList, Clock3 } from "lucide-react";
+import { Home, History, ShoppingCart, UserRound, Zap, LogOut, Package, ClipboardList, Clock3, Settings2 } from "lucide-react";
 import { createAdminOrder, updateAdminAccount, signOutAdmin } from "./actions";
 
 type Service = { id: string; name: string; category: string; price: number; active: boolean };
@@ -27,7 +27,7 @@ export function AdminDashboard({ tab, email, username, services, orders, notice,
   const revenue = orders.filter(order => order.status === "completed").reduce((sum, order) => sum + Number(order.total || 0), 0);
 
   return <main className="dashboard-shell min-h-screen pb-28">
-    <header className="site-header sticky top-0"><div className="container flex min-h-[68px] items-center justify-between gap-3"><Link href="/dashboard?tab=home" className="brand" aria-label="Beranda dashboard"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link><div className="flex items-center gap-2"><Link href="/dashboard/sprintpedia" className="button button-secondary"><Zap size={16}/> SprintPedia</Link><form action={signOutAdmin}><button className="button button-secondary" type="submit"><LogOut size={16}/><span className="hidden sm:inline">Keluar</span></button></form></div></div></header>
+    <header className="site-header sticky top-0"><div className="container flex min-h-[68px] items-center justify-between gap-3"><Link href="/dashboard?tab=home" className="brand" aria-label="Beranda dashboard"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link><div className="flex items-center gap-2"><Link href="/dashboard/settings" className="button button-secondary"><Settings2 size={16}/> Pengaturan</Link><Link href="/dashboard/sprintpedia" className="button button-secondary"><Zap size={16}/> SprintPedia</Link><form action={signOutAdmin}><button className="button button-secondary" type="submit"><LogOut size={16}/><span className="hidden sm:inline">Keluar</span></button></form></div></div></header>
     <div className="container max-w-6xl pt-7">
       {activeTab === "home" && <div className="mb-7"><h1 className="text-3xl font-bold">Beranda</h1><p className="mt-2 text-sm text-slate-400">Ringkasan aktivitas toko dan pesanan terbaru.</p></div>}
       {notice && <div role="status" className="mt-5 rounded-xl border border-emerald-700/60 bg-emerald-950/40 px-4 py-3 text-sm text-emerald-200">{notice}</div>}

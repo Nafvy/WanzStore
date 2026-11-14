@@ -189,4 +189,5 @@ grant execute on function public.owner_set_user_role(uuid,text) to authenticated
 grant execute on function public.owner_update_store(text,text,text,boolean) to authenticated;
 grant execute on function public.owner_save_service(uuid,text,text,text,numeric,boolean) to authenticated;
 grant execute on function public.owner_update_order_status(uuid,text) to authenticated;
-grant select on public.services to anon;\ngrant select, insert, update, delete on public.store_settings, public.services, public.orders, public.owner_activity_logs to authenticated;
+grant select on public.services to anon;
+grant select, insert, update, delete on public.store_settings, public.services, public.orders, public.owner_activity_logs to authenticated;

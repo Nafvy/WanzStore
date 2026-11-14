@@ -14,7 +14,7 @@ export async function POST() {
   const { data: config, error } = await supabase.from("provider_configs")
     .select("endpoint, api_key, enabled")
     .order("created_at", { ascending: true }).limit(1).maybeSingle();
-  if (error) return NextResponse.json({ error: "Gagal membaca konfigurasi provider. Pastikan SQL migrasi sudah dijalankan." }, { status: 500 });
+  if (error) return NextResponse.json({ error: "Gagal membaca konfigurasi provider.", diagnostic: { code: error.code ?? null, message: error.message, hint: error.hint ?? null } }, { status: 500 });
   if (!config?.endpoint || !config.api_key) return NextResponse.json({ error: "Simpan URL Permintaan dan API Key terlebih dahulu." }, { status: 400 });
   if (!config.enabled) return NextResponse.json({ error: "Provider sedang dinonaktifkan." }, { status: 400 });
 

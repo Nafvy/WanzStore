@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { setUserRole, updateStore, saveService, deleteService, updateOrderStatus } from "./actions";
-import { AdminDashboard } from "./admin-panel";
+import { renderAdminDashboard } from "./admin-page";
 import { Boxes, ClipboardList, Cog, LogOut, ShieldCheck, Store, Users, Activity, Package, Clock3, Zap, Home, History, ShoppingCart, UserRound } from "lucide-react";
 
 const roles = {
@@ -40,14 +40,7 @@ export default async function DashboardPage({ searchParams }: Props) {
     redirect("/login");
   }
 
-  if (role === "admin") {
-    const tab = params.tab || "home";
-    const [adminServices, adminOrders] = await Promise.all([
-      supabase.from("services").select("id,name,category,price,active").eq("active", true).order("name"),
-      supabase.from("orders").select("id,order_code,customer_email,target,quantity,total,status,created_at").order("created_at", { ascending: false }).limit(200),
-    ]);
-    return <AdminDashboard tab={tab} email={user.email || ""} username={profile?.username || ""} services={adminServices.data || []} orders={adminOrders.data || []} notice={params.notice} error={params.error || (adminServices.error || adminOrders.error ? "Data admin belum dapat dimuat. Pastikan migration admin sudah dijalankan di Supabase." : undefined)} />;
-  }
+  if (role === "admin") return renderAdminDashboard("home");
 
   if (role !== "owner") {
     const current = roles[role];

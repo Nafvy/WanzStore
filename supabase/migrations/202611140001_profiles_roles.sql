@@ -24,6 +24,13 @@ create policy "Owners can update their username"
   using (auth.uid() = id)
   with check (auth.uid() = id);
 
+
+-- Backfill profiles for accounts that existed before this migration.
+insert into public.profiles (id, username)
+select id, nullif(raw_user_meta_data ->> 'username', '')
+from auth.users
+on conflict (id) do nothing;
+
 -- Prevent users from changing their own role through the client API.
 revoke update on public.profiles from authenticated;
 grant update (username, updated_at) on public.profiles to authenticated;

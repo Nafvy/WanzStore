@@ -17,25 +17,25 @@ export async function saveProviderConfig(formData: FormData) {
 
   const endpoint = String(formData.get("endpoint") || "").trim();
   const apiKey = String(formData.get("api_key") || "").trim();
-  const secretKey = String(formData.get("secret_key") || "").trim();
   let parsed: URL;
   try { parsed = new URL(endpoint); } catch { fail("URL Permintaan tidak valid."); }
-  if (parsed.protocol !== "https:") fail("URL Permintaan wajib menggunakan HTTPS.");
+  if (parsed.protocol !== "https:" || parsed.hostname !== "sprintpedia.id" || parsed.pathname !== "/api/profile") {
+    fail("Gunakan endpoint profil resmi https://sprintpedia.id/api/profile.");
+  }
 
   const { data: existing, error: readError } = await supabase.from("provider_configs")
-    .select("id, api_key, secret_key").order("created_at", { ascending: true }).limit(1).maybeSingle();
-  if (readError) fail("Gagal membaca konfigurasi. Jalankan migration SprintPedia terbaru terlebih dahulu.");
-  if (!existing && (!apiKey || !secretKey)) fail("API Key dan Secret Key wajib diisi untuk konfigurasi pertama.");
-  if (apiKey.length > 2000 || secretKey.length > 2000) fail("Kunci API terlalu panjang.");
+    .select("id, api_key").order("created_at", { ascending: true }).limit(1).maybeSingle();
+  if (readError) fail("Gagal membaca konfigurasi provider.");
+  if (!existing && !apiKey) fail("API Key wajib diisi untuk konfigurasi pertama.");
+  if (apiKey.length > 2000) fail("API Key terlalu panjang.");
 
   const payload = {
     provider_name: "SprintPedia",
     endpoint,
     ...(apiKey ? { api_key: apiKey } : {}),
-    ...(secretKey ? { secret_key: secretKey } : {}),
     api_key_param: "api_key",
     action_param: "action",
-    balance_action: "balance",
+    balance_action: "profile",
     services_action: "services",
     add_action: "add",
     status_action: "status",

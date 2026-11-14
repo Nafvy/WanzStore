@@ -68,7 +68,7 @@ export default async function DashboardPage({ searchParams }: Props) {
     <main className="dashboard-shell min-h-screen pb-12">
       <header className="site-header sticky top-0">
         <div className="container flex min-h-[72px] items-center justify-between gap-3">
-          <Link href="/dashboard#overview" className="brand" aria-label="Kembali ke dashboard"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link>
+          <Link href="/dashboard" className="brand" aria-label="Kembali ke dashboard"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link>
           <div className="flex items-center gap-3"><span className="hidden rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-2 text-xs font-semibold text-violet-200 sm:inline-flex">Pemilik toko</span><form action={signOut}><button className="button button-secondary" type="submit"><LogOut size={16}/> Keluar</button></form></div>
         </div>
       </header>
@@ -134,10 +134,10 @@ export default async function DashboardPage({ searchParams }: Props) {
       </div>
 
       <nav aria-label="Navigasi dashboard pemilik" className="dashboard-bottom-nav">
-        <a href="#pengguna"><Users size={18}/><span>Pengguna</span></a>
-        <a href="#operasional"><Store size={18}/><span>Operasional</span></a>
-        <a href="#keamanan"><ShieldCheck size={18}/><span>Keamanan</span></a>
-        <a href="#pesanan"><ClipboardList size={18}/><span>Pesanan</span></a>
+        <Link href="/dashboard"><Home size={18}/><span>Ringkasan</span></Link>
+        <Link href="/dashboard/users"><Users size={18}/><span>Pengguna</span></Link>
+        <Link href="/dashboard/store"><Store size={18}/><span>Operasional</span></Link>
+        <Link href="/dashboard/orders"><ClipboardList size={18}/><span>Pesanan</span></Link>
       </nav>
     </main>
   );

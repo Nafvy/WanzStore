@@ -13,7 +13,10 @@ const roles = {
 } as const;
 
 const money = (value: number | string | null) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(Number(value || 0));
-const date = (value: string) => new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
+const date = (value: string) => {
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? "Tanggal tidak tersedia" : new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(parsed);
+};
 const statusLabel: Record<string, string> = { pending: "Menunggu", processing: "Diproses", completed: "Selesai", failed: "Gagal", cancelled: "Dibatalkan" };
 
 type Props = { searchParams: Promise<{ notice?: string; error?: string; tab?: string }> };
@@ -131,11 +134,11 @@ export default async function DashboardPage({ searchParams }: Props) {
         <p className="mt-6 text-center text-xs text-slate-600">WanzStore Owner Console · Data dikelola melalui Supabase.</p>
       </div>
 
-      <nav aria-label="Navigasi utama" className="dashboard-bottom-nav">
-        <a href="#overview"><Home size={18}/><span>Beranda</span></a>
-        <a href="#pesanan"><History size={18}/><span>Riwayat</span></a>
-        <a href="#operasional" className="new-order-tab"><ShoppingCart size={20}/><span>New order</span></a>
-        <a href="#keamanan"><UserRound size={18}/><span>Saya</span></a>
+      <nav aria-label="Navigasi dashboard pemilik" className="dashboard-bottom-nav">
+        <a href="#pengguna"><Users size={18}/><span>Pengguna</span></a>
+        <a href="#operasional"><Store size={18}/><span>Operasional</span></a>
+        <a href="#keamanan"><ShieldCheck size={18}/><span>Keamanan</span></a>
+        <a href="#pesanan"><ClipboardList size={18}/><span>Pesanan</span></a>
       </nav>
     </main>
   );

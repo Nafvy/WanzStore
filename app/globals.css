@@ -14,3 +14,32 @@
 .dashboard-bottom-nav{position:fixed;z-index:30;inset:auto 0 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;border-top:1px solid #293246;background:#0d111cF2;padding:8px max(12px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));backdrop-filter:blur(16px)}.dashboard-bottom-nav a{display:flex;min-width:0;min-height:48px;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:10px;color:#9aa5b7;font-size:10px;font-weight:650}.dashboard-bottom-nav a:hover{background:#1b2231;color:#fff}.dashboard-bottom-nav .new-order-tab{color:#c4b5fd}.dashboard-shell{padding-bottom:100px}@media(min-width:900px){.dashboard-bottom-nav{left:50%;right:auto;bottom:16px;width:min(520px,calc(100% - 32px));transform:translateX(-50%);border:1px solid #30394c;border-radius:16px;padding:8px 12px}.dashboard-shell{padding-bottom:120px}}
 
 .dashboard-bottom-nav a.active{background:#211a37;color:#d6c8ff}.dashboard-bottom-nav a.active svg{color:#bba6ff}
+
+
+/* WanzStore operational interface: restrained graphite, clear hierarchy, no decorative glow. */
+:root{color-scheme:dark;--bg:#0d1117;--surface:#151b23;--line:#303945;--text:#edf1f5;--muted:#a3adba}
+body{background:var(--bg);color:var(--text)}
+.site-header{background:#10161e;border-color:#303945}
+.brand-mark{border-radius:9px;background:#d6e4e0;color:#14211e}
+.brand-accent{color:#a8c8bd}
+.button{border-radius:8px;transition:background .15s,border-color .15s}
+.button-primary{background:#315f52;color:#f4faf7}
+.button-primary:hover{background:#3d7564}
+.button-secondary{border-color:#3a4653;background:#19212b;color:#e7edf2}
+.button-secondary:hover,.button-quiet:hover{background:#232e3a}
+:focus-visible{outline-color:#9bc7b8}
+::selection{background:#416b5e;color:#fff}
+.auth-input{border-radius:8px;border-color:#3a4653;background:#101720}
+.auth-input:focus{border-color:#8eb8a9;box-shadow:0 0 0 3px #8eb8a91f}
+.auth-submit{border-radius:8px;background:#315f52}
+.auth-submit:hover{background:#3d7564}
+.dashboard-shell{background:#0d1117}
+.dashboard-card{border-color:#303945;border-radius:12px;background:#151b23}
+.dashboard-bottom-nav{border-color:#303945;background:#10161e;padding-bottom:calc(8px + env(safe-area-inset-bottom));}
+.dashboard-bottom-nav a{border-radius:8px;color:#a3adba}
+.dashboard-bottom-nav a:hover{background:#202a34;color:#f4f7fa}
+.dashboard-bottom-nav a.active{background:#263b35;color:#d8ebe3}
+.dashboard-bottom-nav a.active svg{color:#a8c8bd}
+.panel-preview,.platform-card,.cta-panel{box-shadow:none}
+@media(min-width:900px){.dashboard-bottom-nav{background:#151b23;border-color:#3a4653}}
+@media(max-width:520px){.container{width:calc(100% - 28px)}.dashboard-card{padding:20px}}

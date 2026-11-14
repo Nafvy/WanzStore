@@ -25,7 +25,10 @@ export async function saveProviderConfig(formData: FormData) {
 
   const { data: existing, error: readError } = await supabase.from("provider_configs")
     .select("id, api_key").order("created_at", { ascending: true }).limit(1).maybeSingle();
-  if (readError) fail("Gagal membaca konfigurasi provider.");
+  if (readError) {
+    const detail = [readError.code, readError.message, readError.hint].filter(Boolean).join(" — ");
+    fail("Gagal membaca konfigurasi provider. " + detail);
+  }
   if (!existing && !apiKey) fail("API Key wajib diisi untuk konfigurasi pertama.");
   if (apiKey.length > 2000) fail("API Key terlalu panjang.");
 
@@ -47,7 +50,7 @@ export async function saveProviderConfig(formData: FormData) {
     ? supabase.from("provider_configs").update(payload).eq("id", existing.id)
     : supabase.from("provider_configs").insert(payload);
   const { error } = await query;
-  if (error) fail("Konfigurasi gagal disimpan: " + error.message);
+  if (error) fail("Konfigurasi gagal disimpan: " + [error.code, error.message, error.hint].filter(Boolean).join(" — "));
   revalidatePath("/dashboard/sprintpedia");
   redirect("/dashboard/sprintpedia?saved=1");
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { setUserRole, updateStore, saveService, deleteService, updateOrderStatus } from "./actions";
-import { ArrowUpRight, Boxes, ClipboardList, Cog, LogOut, ShieldCheck, Store, Users, Wallet, Activity, Search, Package, CircleCheck, Clock3 } from "lucide-react";
+import { Boxes, ClipboardList, Cog, LogOut, ShieldCheck, Store, Users, Activity, Package, Clock3 } from "lucide-react";
 
 const roles = {
   owner: { label: "Pemilik toko", title: "Dashboard Pemilik Toko", description: "Pusat kendali dan pengelolaan WanzStore." },

@@ -1,39 +1,32 @@
 # WanzStore
 
-Premium digital growth platform built with Next.js, TypeScript, Tailwind CSS, and Supabase.
+SMM Booster panel built with Next.js, TypeScript, Tailwind CSS, and Supabase Auth.
 
-## Current status
+## Current implementation
 
-The repository currently contains the initial responsive landing page and application scaffold. Authentication, database-backed orders, wallet/deposits, admin tools, and provider integrations are not implemented yet.
+- Responsive SMM landing page and platform categories
+- Supabase email/password sign-in and registration
+- Email confirmation callback
+- Cookie session refresh middleware
+- Protected starter customer dashboard
 
-## Requirements
+Not implemented yet: SprintPedia API orders, payment processing, wallet ledger, admin roles/dashboard, reseller API, and order history. Preview content is not live service data.
 
-- Node.js 20+
-- npm
+## Setup
 
-## Local development
+1. Create a Supabase project.
+2. In Supabase Authentication settings, enable Email provider and configure the site URL plus redirect URL `https://YOUR_DOMAIN/auth/callback`.
+3. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` to Vercel for Production, Preview, and Development.
+4. Redeploy the project.
 
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
+For local development, copy `.env.example` to `.env.local`, fill the two public Supabase values, then run `npm install` and `npm run dev`.
 
-Open http://localhost:3000.
+Never put the Supabase service role key or SprintPedia API key in client-side code or commit them to Git.
 
-## Environment variables
+## Security
 
-See `.env.example`. Never commit real credentials or expose the Supabase service role key to browser code.
-
-## Deployment
-
-Import this repository into Vercel, configure the environment variables when Supabase integration is implemented, and deploy the `main` branch.
-
-## Security principles
-
-- Enforce authorization on the server, not only in the UI.
-- Validate all user input.
-- Use atomic database operations for balance changes.
-- Verify provider webhook signatures.
-- Keep secrets out of client bundles.
-- Only offer transparent, legitimate digital marketing services that comply with platform terms.
+- Browser authentication uses the Supabase anon key and cookie-based sessions.
+- Server routes must verify users with `auth.getUser()`.
+- Add database Row Level Security before storing customer data.
+- Balance changes must use atomic database transactions.
+- Verify SprintPedia webhook signatures and keep provider credentials server-side.

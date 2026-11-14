@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { setUserRole, updateStore, saveService, deleteService, updateOrderStatus } from "./actions";
-import { Boxes, ClipboardList, Cog, LogOut, ShieldCheck, Store, Users, Activity, Package, Clock3 } from "lucide-react";
+import { Boxes, ClipboardList, Cog, LogOut, ShieldCheck, Store, Users, Activity, Package, Clock3, Zap, Home, History, ShoppingCart, UserRound } from "lucide-react";
 
 const roles = {
   owner: { label: "Pemilik toko", title: "Dashboard Pemilik Toko", description: "Pusat kendali dan pengelolaan WanzStore." },
@@ -61,12 +61,12 @@ export default async function DashboardPage({ searchParams }: Props) {
     <main className="dashboard-shell min-h-screen pb-12">
       <header className="site-header sticky top-0">
         <div className="container flex min-h-[72px] items-center justify-between gap-3">
-          <Link href="/" className="brand" aria-label="WanzStore beranda"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link>
+          <Link href="/dashboard#overview" className="brand" aria-label="Kembali ke dashboard"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link>
           <div className="flex items-center gap-3"><span className="hidden rounded-full border border-violet-400/30 bg-violet-400/10 px-3 py-2 text-xs font-semibold text-violet-200 sm:inline-flex">Pemilik toko</span><form action={signOut}><button className="button button-secondary" type="submit"><LogOut size={16}/> Keluar</button></form></div>
         </div>
       </header>
 
-      <div className="container pt-8">
+      <div id="overview" className="container pt-8">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div><p className="text-xs font-bold tracking-[.16em] text-violet-300">WANZSTORE / OWNER CONSOLE</p><h1 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Dashboard Pemilik Toko</h1><p className="mt-2 text-sm text-slate-400">Selamat datang, {profile?.username || user.email?.split("@")[0] || "Pemilik"}.</p></div>
           <div className="text-right"><p className="text-xs text-slate-500">LOGIN SEBAGAI</p><p className="mt-1 max-w-[260px] break-all text-sm font-medium">{user.email}</p></div>
@@ -90,6 +90,7 @@ export default async function DashboardPage({ searchParams }: Props) {
           <a href="#operasional" className="flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white sm:text-sm"><Store size={17} className="shrink-0 text-violet-300"/>Operasional toko</a>
           <a href="#keamanan" className="flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white sm:text-sm"><ShieldCheck size={17} className="shrink-0 text-violet-300"/>Keamanan akses</a>
           <a href="#pesanan" className="flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white sm:text-sm"><ClipboardList size={17} className="shrink-0 text-violet-300"/>Pesanan</a>
+          <Link href="/dashboard/sprintpedia" className="flex min-h-11 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-slate-300 transition hover:bg-slate-800 hover:text-white sm:text-sm"><Zap size={17} className="shrink-0 text-violet-300"/>Integrasi SprintPedia</Link>
         </nav>
 
         <section id="pengguna" className="scroll-mt-24 mt-8 rounded-2xl border border-slate-800 bg-slate-900/70 p-5 sm:p-6">
@@ -119,6 +120,13 @@ export default async function DashboardPage({ searchParams }: Props) {
         </section>
         <p className="mt-6 text-center text-xs text-slate-600">WanzStore Owner Console · Data dikelola melalui Supabase.</p>
       </div>
+
+      <nav aria-label="Navigasi utama" className="dashboard-bottom-nav">
+        <a href="#overview"><Home size={18}/><span>Beranda</span></a>
+        <a href="#pesanan"><History size={18}/><span>Riwayat</span></a>
+        <a href="#operasional" className="new-order-tab"><ShoppingCart size={20}/><span>New order</span></a>
+        <a href="#keamanan"><UserRound size={18}/><span>Saya</span></a>
+      </nav>
     </main>
   );
 }

@@ -76,19 +76,20 @@ export async function createAdminOrder(formData: FormData) {
   const { data: { user } } = await client.auth.getUser();
   if (!user) redirect("/login");
   const { data: profile } = await client.from("profiles").select("role").eq("id", user.id).maybeSingle();
-  if (profile?.role !== "admin" && profile?.role !== "owner") fail("Akses admin diperlukan.");
+  if (profile?.role !== "admin") fail("Fitur ini khusus akun Admin.");
   const serviceId = String(formData.get("service_id") || "");
   const target = String(formData.get("target") || "").trim();
   const quantity = Number(formData.get("quantity"));
   if (!serviceId || !target || target.length > 500 || !Number.isInteger(quantity) || quantity < 1 || quantity > 1000000) fail("Data pesanan tidak valid.");
-  const { data: service, error: serviceError } = await client.from("services").select("id,price,active").eq("id", serviceId).maybeSingle();
-  if (serviceError || !service || !service.active) fail("Layanan tidak tersedia.");
-  const total = Number(service.price) * quantity;
-  if (!Number.isFinite(total) || total < 0) fail("Total pesanan tidak valid.");
-  const { error } = await client.from("orders").insert({ user_id: user.id, service_id: service.id, customer_email: user.email || "", target, quantity, total, status: "pending" });
+  const { data, error } = await client.rpc("admin_create_order", {
+    selected_service_id: serviceId,
+    order_target: target,
+    order_quantity: quantity,
+  });
   if (error) fail("Pesanan gagal dibuat: " + error.message);
   revalidatePath("/dashboard");
-  redirect("/dashboard?tab=history&notice=" + encodeURIComponent("Pesanan berhasil dibuat."));
+  const code = Array.isArray(data) ? data[0]?.created_order_code : undefined;
+  redirect("/dashboard?tab=history&notice=" + encodeURIComponent(code ? "Pesanan " + code + " berhasil dibuat." : "Pesanan berhasil dibuat."));
 }
 
 export async function updateAdminAccount(formData: FormData) {

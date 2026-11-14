@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { setUserRole, updateStore, saveService, deleteService, updateOrderStatus } from "./actions";
+import { AdminDashboard } from "./admin-panel";
 import { Boxes, ClipboardList, Cog, LogOut, ShieldCheck, Store, Users, Activity, Package, Clock3, Zap, Home, History, ShoppingCart, UserRound } from "lucide-react";
 
 const roles = {
@@ -15,7 +16,7 @@ const money = (value: number | string | null) => new Intl.NumberFormat("id-ID", 
 const date = (value: string) => new Intl.DateTimeFormat("id-ID", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 const statusLabel: Record<string, string> = { pending: "Menunggu", processing: "Diproses", completed: "Selesai", failed: "Gagal", cancelled: "Dibatalkan" };
 
-type Props = { searchParams: Promise<{ notice?: string; error?: string }> };
+type Props = { searchParams: Promise<{ notice?: string; error?: string; tab?: string }> };
 
 export default async function DashboardPage({ searchParams }: Props) {
   const params = await searchParams;
@@ -36,9 +37,18 @@ export default async function DashboardPage({ searchParams }: Props) {
     redirect("/login");
   }
 
+  if (role === "admin") {
+    const tab = params.tab || "home";
+    const [adminServices, adminOrders] = await Promise.all([
+      supabase.from("services").select("id,name,category,price,active").eq("active", true).order("name"),
+      supabase.from("orders").select("id,order_code,customer_email,target,quantity,total,status,created_at").order("created_at", { ascending: false }).limit(200),
+    ]);
+    return <AdminDashboard tab={tab} email={user.email || ""} username={profile?.username || ""} services={adminServices.data || []} orders={adminOrders.data || []} notice={params.notice} error={params.error || (adminServices.error || adminOrders.error ? "Data admin belum dapat dimuat. Pastikan migration admin sudah dijalankan di Supabase." : undefined)} />;
+  }
+
   if (role !== "owner") {
     const current = roles[role];
-    return <main className="dashboard-shell min-h-screen"><header className="site-header"><div className="container flex h-[72px] items-center justify-between"><Link href="/dashboard#overview" className="brand"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link><form action={signOut}><button className="button button-secondary" type="submit"><LogOut size={16}/> Keluar</button></form></div></header><section className="dashboard-card"><span className="text-xs font-semibold text-violet-300">{current.label}</span><h1 className="mt-4 text-3xl font-bold">{current.title}</h1><p className="mt-2 text-sm text-slate-400">{current.description}</p><div className="mt-6 rounded-xl border border-slate-700 bg-slate-900 p-4"><p className="text-xs text-slate-500">AKUN AKTIF</p><p className="mt-2 text-sm">{user.email}</p></div>{role === "admin" && <Link href="/dashboard/sprintpedia" className="button button-primary mt-5"><Zap size={16}/> Integrasi SprintPedia</Link>}</section></main>;
+    return <main className="dashboard-shell min-h-screen"><header className="site-header"><div className="container flex h-[72px] items-center justify-between"><Link href="/dashboard?tab=home" className="brand"><span className="brand-mark">W</span><span>Wanz<span className="brand-accent">Store</span></span></Link><form action={signOut}><button className="button button-secondary" type="submit"><LogOut size={16}/> Keluar</button></form></div></header><section className="dashboard-card"><span className="text-xs font-semibold text-violet-300">{current.label}</span><h1 className="mt-4 text-3xl font-bold">{current.title}</h1><p className="mt-2 text-sm text-slate-400">{current.description}</p><div className="mt-6 rounded-xl border border-slate-700 bg-slate-900 p-4"><p className="text-xs text-slate-500">AKUN AKTIF</p><p className="mt-2 text-sm">{user.email}</p></div></section></main>;
   }
 
   const [usersResult, settingsResult, servicesResult, ordersResult, logsResult] = await Promise.all([

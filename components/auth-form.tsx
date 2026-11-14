@@ -12,24 +12,21 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
   const isRegister = mode === "register";
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setNotice("");
 
     const formData = new FormData(event.currentTarget);
     const email = String(formData.get("email") ?? "").trim();
     const password = String(formData.get("password") ?? "");
     const username = String(formData.get("username") ?? "").trim();
-
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
     if (!url || !key) {
-      setError("Supabase belum dikonfigurasi. Tambahkan URL dan anon key pada Environment Variables Vercel.");
+      setError("Supabase belum dikonfigurasi. Periksa Environment Variables Vercel.");
       return;
     }
 
@@ -38,29 +35,22 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
       const supabase = createBrowserClient(url, key);
 
       if (isRegister) {
-        const { data, error: authError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { username },
-            emailRedirectTo: `${window.location.origin}/auth/callback`,
-          },
+        const response = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password, username }),
         });
-
-        if (authError) throw authError;
-        if (data.session) {
-          router.replace("/dashboard");
-          router.refresh();
-          return;
-        }
-        setNotice("Pendaftaran berhasil. Periksa email untuk mengonfirmasi akun sebelum login.");
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || "Pendaftaran gagal.");
+        const { error: sessionError } = await supabase.auth.setSession(result.session);
+        if (sessionError) throw sessionError;
       } else {
         const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
         if (authError) throw authError;
-        router.replace("/dashboard");
-        router.refresh();
-        return;
       }
+
+      router.replace("/dashboard");
+      router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan. Silakan coba lagi.");
     } finally {
@@ -87,46 +77,21 @@ export function AuthForm({ mode }: { mode: AuthMode }) {
           {isRegister && (
             <label className="auth-label">
               <span className="flex items-center gap-2"><UserRound size={16} /> Nama pengguna</span>
-              <input
-                className="auth-input"
-                name="username"
-                autoComplete="username"
-                minLength={3}
-                maxLength={30}
-                placeholder="Nama pengguna"
-                required
-              />
+              <input className="auth-input" name="username" autoComplete="username" minLength={3} maxLength={30} placeholder="Nama pengguna" required />
             </label>
           )}
 
           <label className="auth-label">
             <span className="flex items-center gap-2"><Mail size={16} /> Email</span>
-            <input
-              className="auth-input"
-              type="email"
-              name="email"
-              autoComplete="email"
-              maxLength={254}
-              placeholder="nama@email.com"
-              required
-            />
+            <input className="auth-input" type="email" name="email" autoComplete="email" maxLength={254} placeholder="nama@email.com" required />
           </label>
 
           <label className="auth-label">
             <span className="flex items-center gap-2"><LockKeyhole size={16} /> Password</span>
-            <input
-              className="auth-input"
-              type="password"
-              name="password"
-              autoComplete={isRegister ? "new-password" : "current-password"}
-              minLength={isRegister ? 8 : 1}
-              placeholder={isRegister ? "Minimal 8 karakter" : "Masukkan password"}
-              required
-            />
+            <input className="auth-input" type="password" name="password" autoComplete={isRegister ? "new-password" : "current-password"} minLength={isRegister ? 8 : 1} placeholder={isRegister ? "Minimal 8 karakter" : "Masukkan password"} required />
           </label>
 
           {error && <p className="auth-message auth-error" role="alert">{error}</p>}
-          {notice && <p className="auth-message" role="status">{notice}</p>}
 
           <button className="auth-submit" type="submit" disabled={busy}>
             {busy ? "Memproses..." : isRegister ? "Buat akun" : "Masuk ke akun"}

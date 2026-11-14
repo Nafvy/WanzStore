@@ -15,7 +15,7 @@ export function SprintPediaConnectionTest({ configured }: { configured: boolean 
     try {
       const response = await fetch("/api/admin/sprintpedia/test", { method: "POST" });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Koneksi gagal.");
+      if (!response.ok) throw new Error([result.error || "Koneksi gagal.", result.diagnostic?.code ? "Kode: " + result.diagnostic.code : "", result.diagnostic?.message || ""].filter(Boolean).join(" — "));
       setProfile(result.profile);
       setMessage("Koneksi SprintPedia berhasil.");
     } catch (error) {
